@@ -41,5 +41,5 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.jmdns)
-
+    implementation(libs.preference)
 }

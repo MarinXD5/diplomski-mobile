@@ -1,10 +1,9 @@
 package com.example.myapplication;
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +22,14 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.preference.PreferenceManager;
 
 import com.example.myapplication.consts.consts;
+import com.example.myapplication.utils.directory.TemplateUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends BaseActivity{
     private int selectedColor = Color.RED;
@@ -40,6 +44,7 @@ public class MainActivity extends BaseActivity{
         super.onCreate(savedInstanceState);
 
         setChildLayout(R.layout.activity_main);
+        applyThemeFromPreferences();
 
         if(isLive){
             resolveHostname("raspberrypi", consts.SERVER_PORT,
@@ -276,5 +281,46 @@ public class MainActivity extends BaseActivity{
 
     private void showErrorPopup(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void applyThemeFromPreferences() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String themePref = prefs.getString("pref_theme", "system");
+
+        switch (themePref) {
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
+    }
+
+    public void onSaveTemplateClick() {
+        // Suppose you build a JSON representation of the current LED arrangement
+        JSONObject templateData = new JSONObject();
+        try {
+            templateData.put("color", "#FF0000");
+            templateData.put("pattern", "blink");
+            // etc.
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        boolean result = TemplateUtils.saveTemplate(
+                this,
+                "myCoolTemplate",
+                templateData
+        );
+
+        if (result) {
+            Toast.makeText(this, "Template saved!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Failed to save template.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

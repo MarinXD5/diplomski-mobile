@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ListPreference
+        android:key="pref_theme"
+        android:title="App Theme"
+        android:entries="@array/theme_entries"
+        android:entryValues="@array/theme_values"
+        android:defaultValue="system"
+        android:summary="%s" />
+
+    <com.example.myapplication.utils.ColorListPreference
+        android:key="pref_default_color"
+        android:title="Default LED Color"
+        android:entries="@array/color_entries"
+        android:entryValues="@array/color_values"
+        android:defaultValue="#FF0000"
+        android:summary="Choose the default color for LEDs"
+        tools:ignore="MissingClass" />
+
+    <Preference
+        android:key="pref_save_location"
+        android:title="Default Save Location"
+        android:summary="No folder selected" />
+</PreferenceScreen>
