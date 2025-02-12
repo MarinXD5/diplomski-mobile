@@ -21,6 +21,46 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".LikedActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.nav_liked" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MarketplaceActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.nav_marketplace" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.nav_settings" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".TemplatesActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.nav_templates" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
