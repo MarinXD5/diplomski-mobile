@@ -3,10 +3,12 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class TemplatesActivity extends Activity {
+public class TemplatesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.templates_activity);
+
+        setChildLayout(R.layout.templates_activity);
+
     }
 }

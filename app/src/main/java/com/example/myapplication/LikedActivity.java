@@ -3,10 +3,10 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.os.Bundle;
 
-public class LikedActivity extends Activity {
+public class LikedActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.liked_activity);
+        setChildLayout(R.layout.liked_activity);
     }
 }

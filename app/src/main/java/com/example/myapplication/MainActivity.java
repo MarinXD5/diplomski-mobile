@@ -23,47 +23,23 @@ import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.myapplication.consts.consts;
-import com.google.android.material.navigation.NavigationView;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends BaseActivity{
     private int selectedColor = Color.RED;
     private GestureDetector gestureDetector;
     private Map<Integer, String> coloredDots = new HashMap<>();
     private final boolean isLive = false; // promijeni ovo u true ako želiš testirat aplikaciju na lampicama
 
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-
-        navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this,
-                drawerLayout,
-                toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close
-        );
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
+        setChildLayout(R.layout.activity_main);
 
         if(isLive){
             resolveHostname("raspberrypi", consts.SERVER_PORT,
@@ -300,41 +276,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showErrorPopup(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        Intent intent = null;
-
-        if (id == R.id.nav_home) {
-            if (!(this instanceof MainActivity)) {
-                intent = new Intent(this, MainActivity.class);
-            }
-        } else if (id == R.id.nav_settings) {
-            intent = new Intent(this, SettingsActivity.class);
-        } else if (id == R.id.nav_templates) {
-            intent = new Intent(this, TemplatesActivity.class);
-        } else if (id == R.id.nav_liked) {
-            intent = new Intent(this, LikedActivity.class);
-        } else if (id == R.id.nav_marketplace) {
-            intent = new Intent(this, MarketplaceActivity.class);
-        }
-
-        if (intent != null) {
-            startActivity(intent);
-        }
-
-        drawerLayout.closeDrawers();
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 }
