@@ -1,32 +1,40 @@
 package com.example.myapplication;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.preference.PreferenceManager;
 
 import com.example.myapplication.consts.consts;
-import com.example.myapplication.utils.directory.TemplateUtils;
+import com.example.myapplication.utils.Utils.TemplateUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,6 +43,7 @@ public class MainActivity extends BaseActivity{
     private int selectedColor = Color.RED;
     private GestureDetector gestureDetector;
     private Map<Integer, String> coloredDots = new HashMap<>();
+    private Map<Integer, View> dotMap = new HashMap<>();
     private final boolean isLive = false; // promijeni ovo u true ako želiš testirat aplikaciju na lampicama
 
 
@@ -45,6 +54,65 @@ public class MainActivity extends BaseActivity{
 
         setChildLayout(R.layout.activity_main);
         applyThemeFromPreferences();
+
+        Intent intent = getIntent();
+
+        if (intent != null && intent.hasExtra("templateFilePath")) {
+            String templateFilePath = intent.getStringExtra("templateFilePath");
+            String fileContents = null;
+            assert templateFilePath != null;
+            if (templateFilePath.startsWith("/content:/")) {
+                try (InputStream is = getContentResolver().openInputStream(Uri.parse(templateFilePath));
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    fileContents = sb.toString();
+                    System.out.println("File contents: " + fileContents);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                File file = new File(templateFilePath);
+                System.out.println("Does file exist: " + file.exists());
+                if (file.exists()) {
+                    try (FileReader reader = new FileReader(file);
+                         BufferedReader br = new BufferedReader(reader)) {
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = br.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        fileContents = sb.toString();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if (fileContents != null) {
+                try {
+                    JSONObject templateData = new JSONObject(fileContents);
+                    System.out.println("Template Data: " + templateData);
+                    if (templateData.has("dotColors")) {
+                        JSONObject dotColors = templateData.getJSONObject("dotColors");
+                        for (Iterator<String> it = dotColors.keys(); it.hasNext(); ) {
+                            String key = it.next();
+                            int dotIndex = Integer.parseInt(key);
+                            String colorStr = dotColors.getString(key);
+                            View dot = dotMap.get(dotIndex);
+                            if (dot != null) {
+                                dot.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor(colorStr)));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         if(isLive){
             resolveHostname("raspberrypi", consts.SERVER_PORT,
@@ -83,7 +151,9 @@ public class MainActivity extends BaseActivity{
         });
 
         Button resetButton = findViewById(R.id.resetBTN);
+        Button saveTemplateButton = findViewById(R.id.saveTemplate);
         resetButton.setOnClickListener(v -> resetDotsAndLeds());
+        saveTemplateButton.setOnClickListener(v->onSaveTemplateClick());
     }
 
     private void setupColorPalette() {
@@ -134,11 +204,13 @@ public class MainActivity extends BaseActivity{
                 View dot = new View(this);
                 dot.setId(View.generateViewId());
                 dot.setTag(dotCount);
+
+                dotMap.put(dotCount, dot);
+
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(24, 24);
                 params.setMargins(6, 6, 6, 6);
                 dot.setLayoutParams(params);
                 dot.setBackgroundResource(R.drawable.circle_shape);
-
                 row.addView(dot);
                 dotCount++;
             }
@@ -151,7 +223,6 @@ public class MainActivity extends BaseActivity{
     private void colorDotUnderTouch(ViewGroup container, MotionEvent event) {
         int[] location = new int[2];
         int action = event.getActionMasked();
-        boolean shouldSendCommand = false;
         int r = Color.red(selectedColor);
         int g = Color.green(selectedColor);
         int b = Color.blue(selectedColor);
@@ -173,10 +244,14 @@ public class MainActivity extends BaseActivity{
 
                         int ledIndex = (int) dot.getTag();
 
+                        //Uncomment this when ready to send to raspberry
+                        /*
                         if (!dot.getTag().equals(dot.getContentDescription())) {
                             sendLedCommand(ledIndex, r, g, b);
                             dot.setContentDescription(ledIndex + "_" + r + "_" + g + "_" + b);
                         }
+
+                         */
                     }
                 }
             }
@@ -235,11 +310,11 @@ public class MainActivity extends BaseActivity{
             for (int j = 0; j < row.getChildCount(); j++) {
                 View dot = row.getChildAt(j);
                 coloredDots.clear();
-                dot.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+                dot.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.argb(255,211,211,211)));
             }
         }
 
-        sendResetCommand();
+        //sendResetCommand();
     }
 
     private void resolveHostname(String hostname, int port, Runnable onSuccess, Runnable onFailure) {
@@ -301,26 +376,36 @@ public class MainActivity extends BaseActivity{
     }
 
     public void onSaveTemplateClick() {
-        // Suppose you build a JSON representation of the current LED arrangement
-        JSONObject templateData = new JSONObject();
-        try {
-            templateData.put("color", "#FF0000");
-            templateData.put("pattern", "blink");
-            // etc.
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Save Template");
 
-        boolean result = TemplateUtils.saveTemplate(
-                this,
-                "myCoolTemplate",
-                templateData
-        );
+        final EditText input = new EditText(this);
+        input.setHint("Enter template name");
+        builder.setView(input);
 
-        if (result) {
-            Toast.makeText(this, "Template saved!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Failed to save template.", Toast.LENGTH_SHORT).show();
-        }
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String templateName = input.getText().toString().trim();
+            if (templateName.isEmpty()) {
+                Toast.makeText(this, "Template name cannot be empty.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            JSONObject templateData = new JSONObject();
+            try {
+                templateData.put("color", String.format("#%06X", (0xFFFFFF & selectedColor)));
+                templateData.put("pattern", "blink");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            boolean result = TemplateUtils.saveTemplate(this, templateName, templateData);
+            if (result) {
+                Toast.makeText(this, "Template saved!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Failed to save template.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 }
