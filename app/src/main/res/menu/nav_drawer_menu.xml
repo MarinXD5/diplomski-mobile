@@ -1,17 +1,30 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/nav_home"
+        android:icon="@drawable/home"
         android:title="Home"/>
     <item
         android:id="@+id/nav_settings"
+        android:icon="@drawable/settings"
         android:title="Settings"/>
     <item
         android:id="@+id/nav_templates"
+        android:icon="@drawable/templates"
         android:title="My Templates"/>
     <item
         android:id="@+id/nav_liked"
+        android:icon="@drawable/likes"
         android:title="Liked"/>
     <item
         android:id="@+id/nav_marketplace"
+        android:icon="@drawable/store"
         android:title="Marketplace"/>
+
+    <item
+        android:id="@+id/nav_account"
+        android:title="Account"
+        android:orderInCategory="100"
+        android:icon="@drawable/person"
+        android:visible="false" />
 </menu>

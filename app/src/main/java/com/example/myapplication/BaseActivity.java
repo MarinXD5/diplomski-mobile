@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public abstract class BaseActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -18,6 +20,10 @@ public abstract class BaseActivity extends AppCompatActivity
     protected DrawerLayout drawerLayout;
     protected NavigationView navigationView;
     protected Toolbar toolbar;
+
+    Button loginButton;
+
+    FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +36,8 @@ public abstract class BaseActivity extends AppCompatActivity
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
+        loginButton = findViewById(R.id.loginRedirectButton);
+        mAuth = FirebaseAuth.getInstance();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar,
@@ -37,7 +45,18 @@ public abstract class BaseActivity extends AppCompatActivity
                 R.string.navigation_drawer_close
         );
         drawerLayout.addDrawerListener(toggle);
+
+        loginButton.setOnClickListener(view -> startActivity(new Intent(BaseActivity.this, LoginActivity.class)));
+
         toggle.syncState();
+
+        if(mAuth.getCurrentUser() != null){
+            loginButton.setVisibility(View.GONE);
+            navigationView.getMenu().findItem(R.id.nav_account).setVisible(true);
+        } else {
+            loginButton.setVisibility(View.VISIBLE);
+            navigationView.getMenu().findItem(R.id.nav_account).setVisible(false);
+        }
     }
 
     protected void setChildLayout(int layoutResID) {
@@ -62,6 +81,9 @@ public abstract class BaseActivity extends AppCompatActivity
             intent = new Intent(this, LikedActivity.class);
         } else if (id == R.id.nav_marketplace) {
             intent = new Intent(this, MarketplaceActivity.class);
+        } else if (id == R.id.nav_account) {
+            // Redirect to an AccountActivity (or a fragment) that shows account details
+            intent = new Intent(this, AccountActivity.class);
         }
         if (intent != null) {
             startActivity(intent);

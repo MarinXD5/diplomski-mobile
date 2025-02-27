@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity{
         if (intent != null && intent.hasExtra("templateFilePath")) {
             String templateFilePath = intent.getStringExtra("templateFilePath");
             String fileContents = null;
-            assert templateFilePath != null;
+            System.out.println("Template file path: " + templateFilePath);
             if (templateFilePath.startsWith("/content:/")) {
                 try (InputStream is = getContentResolver().openInputStream(Uri.parse(templateFilePath));
                      BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {

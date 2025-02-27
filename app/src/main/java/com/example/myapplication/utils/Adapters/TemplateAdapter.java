@@ -10,19 +10,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 
-import java.io.File;
 import java.util.List;
 
 public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.ViewHolder> {
 
-    private final List<File> templateFiles;
+    private final List<TemplateItem> templateFiles;
     private final OnTemplateClickListener listener;
 
     public interface OnTemplateClickListener {
-        void onTemplateClick(File templateFile);
+        void onTemplateClick(TemplateItem templateFile);
     }
 
-    public TemplateAdapter(List<File> templateFiles, OnTemplateClickListener listener) {
+    public TemplateAdapter(List<TemplateItem> templateFiles, OnTemplateClickListener listener) {
         this.templateFiles = templateFiles;
         this.listener = listener;
     }
@@ -45,8 +44,8 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull TemplateAdapter.ViewHolder holder, int position) {
-        File file = templateFiles.get(position);
-        holder.fileNameText.setText(file.getName());
+        TemplateItem file = templateFiles.get(position);
+        holder.fileNameText.setText(file.getDisplayName());
         holder.itemView.setOnClickListener(v -> listener.onTemplateClick(file));
     }
 

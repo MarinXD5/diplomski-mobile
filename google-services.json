@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "322566321738",
+    "project_id": "diplomski-mobile-a9faf",
+    "storage_bucket": "diplomski-mobile-a9faf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:322566321738:android:33cf33996ec57b979318b3",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkfyoz20SpfawG-LJZhJKZXzJUMYvlSaU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

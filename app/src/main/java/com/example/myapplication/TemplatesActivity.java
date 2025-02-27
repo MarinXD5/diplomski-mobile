@@ -13,7 +13,9 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.myapplication.modal.TemplatePreviewModal;
 import com.example.myapplication.utils.Adapters.TemplateAdapter;
+import com.example.myapplication.utils.Adapters.TemplateItem;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class TemplatesActivity extends BaseActivity {
-    private final List<File> templateFiles = new ArrayList<>();
+    private List<TemplateItem> templateItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +39,11 @@ public class TemplatesActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadTemplateFiles();
-        TemplateAdapter adapter = new TemplateAdapter(templateFiles, file -> {
+        TemplateAdapter adapter = new TemplateAdapter(templateItems, file -> {
+            TemplatePreviewModal.newInstance(file.getFileUri()).show(getSupportFragmentManager(), "preview");
+
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("templateFilePath", file.getAbsolutePath());
+            intent.putExtra("templateFilePath", file.getFileUri());
             startActivity(intent);
         });
         recyclerView.setAdapter(adapter);
@@ -51,32 +55,30 @@ public class TemplatesActivity extends BaseActivity {
         if (path == null) {
             path = Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath() + "/MyAppTemplates";
         }
-
-        templateFiles.clear();
+        templateItems.clear();
 
         if (path.startsWith("content://")) {
             Uri treeUri = Uri.parse(path);
             DocumentFile directory = DocumentFile.fromTreeUri(this, treeUri);
             if (directory != null && directory.exists() && directory.isDirectory()) {
-                DocumentFile[] files = directory.listFiles();
-                for (DocumentFile docFile : files) {
+                for (DocumentFile docFile : directory.listFiles()) {
                     if (docFile.getName() != null && docFile.getName().endsWith(".mj")) {
-                        templateFiles.add(new File(docFile.getUri().toString()));
+                        templateItems.add(new TemplateItem(docFile.getName(), docFile.getUri()));
                     }
                 }
             }
         } else {
             File directory = new File(path);
-            System.out.println("Exists: " + directory.exists()); //DEBUG
-            System.out.println("Is directory: " + directory.isDirectory()); //DEBUG
             if (directory.exists() && directory.isDirectory()) {
                 File[] files = directory.listFiles((dir, name) -> name.endsWith(".mj"));
                 if (files != null) {
-                    templateFiles.addAll(Arrays.asList(files));
+                    for (File f : files) {
+                        templateItems.add(new TemplateItem(f.getName(), Uri.fromFile(f)));
+                    }
                 }
             }
         }
-        System.out.println(templateFiles); //DEBUG
+        System.out.println("Loaded templates: " + templateItems);
     }
 
 }
