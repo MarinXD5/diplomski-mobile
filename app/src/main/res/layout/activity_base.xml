@@ -23,8 +23,16 @@
                 android:id="@+id/loginRedirectButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="LOGIN"
+                android:layout_gravity="end" />
+
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LOGOUT"
                 android:layout_gravity="end"
-                android:text="LOGIN" />
+                android:visibility="gone" />
         </androidx.appcompat.widget.Toolbar>
 
         <FrameLayout

@@ -21,7 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity
     protected NavigationView navigationView;
     protected Toolbar toolbar;
 
-    Button loginButton;
+    Button loginButton, logoutButton;
 
     FirebaseAuth mAuth;
 
@@ -37,6 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
         loginButton = findViewById(R.id.loginRedirectButton);
+        logoutButton = findViewById(R.id.logoutButton);
         mAuth = FirebaseAuth.getInstance();
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -48,12 +49,21 @@ public abstract class BaseActivity extends AppCompatActivity
 
         loginButton.setOnClickListener(view -> startActivity(new Intent(BaseActivity.this, LoginActivity.class)));
 
+        logoutButton.setOnClickListener(view ->{
+            mAuth.signOut();
+            this.checkLoginStatus();
+        });
         toggle.syncState();
+        checkLoginStatus();
+    }
 
+    private void checkLoginStatus() {
         if(mAuth.getCurrentUser() != null){
             loginButton.setVisibility(View.GONE);
+            logoutButton.setVisibility(View.VISIBLE);
             navigationView.getMenu().findItem(R.id.nav_account).setVisible(true);
         } else {
+            logoutButton.setVisibility(View.GONE);
             loginButton.setVisibility(View.VISIBLE);
             navigationView.getMenu().findItem(R.id.nav_account).setVisible(false);
         }
