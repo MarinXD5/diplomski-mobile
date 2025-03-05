@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/templateImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_template_image" />
+
+    <TextView
+        android:id="@+id/templateName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Template Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:padding="4dp" />
+
+    <TextView
+        android:id="@+id/templatePrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="10 Kredits"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_green_dark"
+        android:padding="4dp" />
+
+    <Button
+        android:id="@+id/purchaseButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Purchase" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/likeButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/likes" />
+
+        <ImageView
+            android:id="@+id/favoriteButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/favorite" />
+
+    </LinearLayout>
+
+</LinearLayout>
