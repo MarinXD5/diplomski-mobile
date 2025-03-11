@@ -38,9 +38,12 @@ import com.example.myapplication.utils.ColorListPreferenceDialogFragmentCompat;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
@@ -172,7 +175,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
-                List<ScanResult> results = wifiManager.getScanResults();
+                Set<ScanResult> results = new HashSet<>(wifiManager.getScanResults());
+                results.removeIf(r -> Objects.equals(r.SSID, "") || Objects.equals(r.SSID, " "));
                 showWiFiSelectionDialog(results);
             }
         }, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
@@ -180,7 +184,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         wifiManager.startScan();
     }
 
-    private void showWiFiSelectionDialog(List<ScanResult> scanResults) {
+    private void showWiFiSelectionDialog(Set<ScanResult> scanResults) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Select a WiFi Network");
 
