@@ -23,4 +23,10 @@
         android:key="pref_save_location"
         android:title="Default Save Location"
         android:summary="No folder selected" />
+
+    <Preference
+        android:key="pref_wifi_connection"
+        android:title="Connect Raspberry to WIFI"
+        android:summary="Make interaction faster by connecting to the WiFi" />
+
 </PreferenceScreen>
